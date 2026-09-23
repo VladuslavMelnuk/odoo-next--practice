@@ -1,0 +1,55 @@
+services:
+  db:
+    image: postgres:15
+    environment:
+      - POSTGRES_DB=postgres
+      - POSTGRES_PASSWORD=odoo
+      - POSTGRES_USER=odoo
+    networks:
+      - internal_network
+    volumes:
+      - odoo-db-data:/var/lib/postgresql/data
+    restart: unless-stopped
+
+  odoo:
+    image: odoo:latest
+    depends_on:
+      - db
+    # ports:
+    #   - "8069:8069" # Повністю закоментовано для ізоляції
+    networks:
+      - internal_network
+    volumes:
+      - odoo-web-data:/var/lib/odoo
+    environment:
+      - HOST=db
+      - USER=odoo
+      - PASSWORD=odoo
+    restart: unless-stopped
+
+  nextjs:
+    build: 
+      context: ./api-gateway
+      dockerfile: Dockerfile
+    ports:
+      - "3000:3000"
+    volumes:
+      - ./api-gateway:/app
+      - /app/node_modules
+    depends_on:
+      - odoo
+    networks:
+      - internal_network
+      - external_network
+    environment:
+      - ODOO_URL=http://odoo:8069
+    restart: unless-stopped
+
+networks:
+  internal_network:
+    internal: true
+  external_network: {}
+
+volumes:
+  odoo-db-data:
+  odoo-web-data:

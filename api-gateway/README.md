@@ -1,36 +1,64 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# Odoo + Next.js API Gateway
 
-## Getting Started
+Практичний університетський проєкт. Побудова ізольованої інфраструктури ERP-системи Odoo 19, де Next.js виступає в ролі єдиної точки входу (API Gateway).
 
-First, run the development server:
+## Про проєкт
 
-```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
-```
+Ця архітектура створена з наголосом на безпеку та мережеву ізоляцію. Сама ERP-система (Odoo) та база даних (PostgreSQL) знаходяться у закритій внутрішній Docker-мережі без доступу ззовні. Усі зовнішні запити проходять виключно через проксі-сервер на базі Next.js, який спілкується з Odoo по внутрішньому протоколу JSON-RPC.
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+### Головні можливості:
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+- Ізольована інфраструктура: Docker Compose з внутрішніми мережами.
+- RBAC Авторизація: Захист ендпоінтів через x-api-key з перевіркою рівнів доступу (Admin / Read-Only).
+- Admin Dashboard: Вбудована панель управління (UI) для генерації ключів та моніторингу метрик у реальному часі.
+- Логування запитів: Збереження історії запитів (статус, час відповіді, використаний ключ, ендпоінт) у локальну базу даних.
+- OpenAPI (Swagger): Автоматично згенерована інтерактивна документація на базі ReDoc.
+- Стрес-стійкість: Архітектура протестована на навантаження за допомогою autocannon (деталі у REPORT.md).
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+## Технологічний стек
 
-## Learn More
+- Backend/Gateway: Next.js (App Router), TypeScript, Tailwind CSS
+- ERP: Odoo 19
+- Database: PostgreSQL 15 (для Odoo) + Local JSON DB (для метрик та API-ключів)
+- DevOps: Docker, Docker Compose
 
-To learn more about Next.js, take a look at the following resources:
+## Швидкий старт
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+Клонуйте репозиторій:
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+git clone https://github.com/VladuslavMelnuk/odoo-next-practice.git
+cd odoo-next-practice
 
-## Deploy on Vercel
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+Запустіть контейнери через Docker Compose:
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+docker compose up -d --build
+
+
+Дочекайтеся ініціалізації бази даних Odoo.
+Перший запуск може зайняти кілька хвилин.
+
+## Навігація по системі
+
+- Адмін-панель (Генерація ключів та моніторинг): http://localhost:3000
+- OpenAPI Документація: http://localhost:3000/api-docs
+
+### Приклад запиту (curl)
+
+Згенеруйте ключ в Адмін-панелі та зробіть запит:
+
+curl -H "x-api-key: ВАШ_КЛЮЧ" http://localhost:3000/api/products
+
+
+## Завдання для практики
+
+Цей проєкт виконує всі поставлені вимоги ТЗ:
+
+1. Побудова ізольованої інфраструктури.
+2. Використання сервісного юзера Odoo.
+3. Налаштування Next.js як API-шлюзу.
+4. Розробка системи моніторингу API (Dashboard).
+5. Авторизація по API ключу з рівнями доступу.
+6. Наявність OpenAPI документації.
+7. Реалізація функціоналу (Products, Orders).
+8. Навантажувальне тестування та аналітичний звіт.

@@ -1,6 +1,7 @@
 {
   "name": "api-gateway",
   "version": "0.1.0",
+  "description": "API Gateway для ізольованої ERP-системи Odoo на базі Next.js",
   "private": true,
   "scripts": {
     "dev": "next dev",

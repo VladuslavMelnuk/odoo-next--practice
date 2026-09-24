@@ -1,0 +1,106 @@
+{
+  "openapi": "3.0.0",
+  "info": {
+    "title": "Odoo Next.js API Gateway",
+    "version": "1.0.0",
+    "description": "API-шлюз для інтеграції з ізольованою ERP-системою Odoo. \n\nДля виконання запитів використовуйте заголовок `x-api-key`."
+  },
+  "components": {
+    "securitySchemes": {
+      "ApiKeyAuth": {
+        "type": "apiKey",
+        "in": "header",
+        "name": "x-api-key",
+        "description": "Введіть ваш API ключ (наприклад, admin_key_999)"
+      }
+    }
+  },
+  "security": [
+    {
+      "ApiKeyAuth": []
+    }
+  ],
+  "paths": {
+    "/api/products": {
+      "get": {
+        "summary": "Отримати список товарів",
+        "description": "Повертає останні товари з бази Odoo.",
+        "responses": {
+          "200": { "description": "Масив товарів успішно отримано" },
+          "401": { "description": "Неавторизовано (відсутній або недійсний x-api-key)" }
+        }
+      },
+      "post": {
+        "summary": "Створити новий товар",
+        "description": "Створює новий товар типу 'consu' в Odoo. Вимагає ключ з роллю ADMIN.",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "name": { "type": "string", "example": "Курс Next.js + Odoo" },
+                  "price": { "type": "number", "example": 1500 }
+                },
+                "required": ["name", "price"]
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": { "description": "Товар успішно створено" },
+          "403": { "description": "Заборонено (ключ має роль read-only)" }
+        }
+      }
+    },
+    "/api/orders": {
+      "post": {
+        "summary": "Створити нове замовлення",
+        "description": "Створює клієнта та замовлення на покупку (Sales Order) в Odoo.",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "customer_name": { "type": "string", "example": "Влад Мельник" },
+                  "product_id": { "type": "integer", "example": 1 },
+                  "quantity": { "type": "integer", "example": 2 },
+                  "price": { "type": "number", "example": 1500 }
+                },
+                "required": ["customer_name", "product_id", "quantity", "price"]
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": { "description": "Замовлення успішно створено" }
+        }
+      },
+      "put": {
+        "summary": "Змінити статус замовлення",
+        "description": "Оновлює статус існуючого замовлення (наприклад, підтвердження).",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "order_id": { "type": "integer", "example": 1 },
+                  "action": { "type": "string", "example": "confirm" }
+                },
+                "required": ["order_id", "action"]
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": { "description": "Статус успішно оновлено" }
+        }
+      }
+    }
+  }
+}

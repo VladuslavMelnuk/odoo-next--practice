@@ -40,14 +40,14 @@ docker compose up -d --build
 
 ## Навігація по системі
 
-- Адмін-панель (Генерація ключів та моніторинг): http://localhost:3000
-- OpenAPI Документація: http://localhost:3000/api-docs
+- Адмін-панель (Генерація ключів та моніторинг): http://localhost:3001
+- OpenAPI Документація: http://localhost:3001/api-docs
 
 ### Приклад запиту (curl)
 
 Згенеруйте ключ в Адмін-панелі та зробіть запит:
 
-curl -H "x-api-key: ВАШ_КЛЮЧ" http://localhost:3000/api/products
+curl -H "x-api-key: ВАШ_КЛЮЧ" http://localhost:3001/api/products
 
 
 ## Завдання для практики

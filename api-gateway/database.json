@@ -23,6 +23,14 @@
     {
       "key": "pk_otrc1wh2v",
       "role": "admin"
+    },
+    {
+      "key": "pk_tc70wpnja",
+      "role": "read-only"
+    },
+    {
+      "key": "pk_yl7xen7yv",
+      "role": "admin"
     }
   ],
   "metrics": [

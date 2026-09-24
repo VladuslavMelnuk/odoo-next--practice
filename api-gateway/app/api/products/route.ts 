@@ -1,0 +1,33 @@
+// api-gateway/src/app/api/products/route.ts
+import { NextResponse } from 'next/server';
+import { callOdoo } from '../../../lib/odoo';
+
+// GET: Отримання списку товарів
+export async function GET() {
+  try {
+    const products = await callOdoo('product.template', 'search_read', [[]], { 
+        limit: 10, 
+        fields: ['id', 'name', 'list_price'] 
+    });
+    return NextResponse.json({ success: true, data: products });
+  } catch (error) { 
+    return NextResponse.json({ success: false, error: (error as Error).message }, { status: 500 });
+  }
+}
+
+// POST: Створення нового товару
+export async function POST(request: Request) {
+  try {
+    const body = await request.json();
+    
+    const productId = await callOdoo('product.template', 'create', [[{
+      name: body.name,
+      list_price: body.price,
+      type: 'consu' 
+    }]]);
+
+    return NextResponse.json({ success: true, productId: productId[0] });
+  } catch (error) {
+    return NextResponse.json({ success: false, error: (error as Error).message }, { status: 500 });
+  }
+}
